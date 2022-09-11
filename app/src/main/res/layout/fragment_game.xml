@@ -18,24 +18,23 @@
 
     <ImageView
         android:id="@+id/scoreIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         app:layout_constraintTop_toTopOf="@id/guidelineInfo"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="40dp"
         android:src="@drawable/ic_score"
         />
 
-    <TextView
-        android:id="@+id/scoreTitleTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/score_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="24dp"
-        android:textSize="32sp"
+    <ImageView
+        android:id="@+id/timeIcon"
+        android:layout_width="64dp"
+        android:layout_height="52dp"
+        app:layout_constraintTop_toTopOf="@id/guidelineInfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="80dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_time"
         />
 
     <TextView
@@ -54,23 +53,14 @@
         android:id="@+id/gameTimerValueTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/timeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/timeIcon"
+        app:layout_constraintStart_toEndOf="@id/timeIcon"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:textSize="32sp"
-        android:text="20"
-        />
-
-    <TextView
-        android:id="@+id/gameTimerTitleTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@id/gameTimerValueTv"
-        app:layout_constraintTop_toTopOf="@id/gameTimerValueTv"
-        app:layout_constraintBottom_toBottomOf="@id/gameTimerValueTv"
-        android:text="@string/game_time_remaining_title"
-        android:textSize="32sp"
+        android:textStyle="bold"
+        tools:text="20"
         />
 
     <androidx.constraintlayout.widget.Guideline
