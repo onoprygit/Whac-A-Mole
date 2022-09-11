@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/gameMenuFragment">
+    <fragment
+        android:id="@+id/gameMenuFragment"
+        android:name="com.onopry.whac_a_mole.view.screens.StartScreenFragment"
+        android:label="fragment_game_menu"
+        tools:layout="@layout/fragment_start_screen" >
+        <action
+            android:id="@+id/action_gameMenuFragment_to_gameFragment2"
+            app:destination="@id/gameFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment2"
+        android:name="com.onopry.whac_a_mole.view.screens.GameFragment"
+        android:label="fragment_game"
+        tools:layout="@layout/fragment_game" >
+        <action
+            android:id="@+id/action_gameFragment2_to_resultFragment"
+            app:destination="@id/resultFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="com.onopry.whac_a_mole.view.screens.ResultFragment"
+        android:label="fragment_result"
+        tools:layout="@layout/fragment_result" >
+        <action
+            android:id="@+id/action_resultFragment_to_gameFragment2"
+            app:destination="@id/gameFragment2" />
+        <action
+            android:id="@+id/action_resultFragment_to_gameMenuFragment"
+            app:destination="@id/gameMenuFragment" />
+        <argument
+            android:name="userScore"
+            app:argType="integer"
+            android:defaultValue="-1"
+            />
+    </fragment>
+</navigation>
