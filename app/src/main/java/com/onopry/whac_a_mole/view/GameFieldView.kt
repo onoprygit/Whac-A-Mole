@@ -2,16 +2,12 @@ package com.onopry.whac_a_mole.view
 
 import android.content.Context
 import android.graphics.*
-import android.graphics.drawable.Drawable
-import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
-import com.onopry.whac_a_mole.COLUMNS
-import com.onopry.whac_a_mole.R
-import com.onopry.whac_a_mole.ROWS
+import com.onopry.whac_a_mole.*
 import kotlin.math.floor
 
 private const val TAG = "GameFieldView_TAG"
@@ -37,10 +33,25 @@ class GameFieldView @JvmOverloads constructor(
 
     private val fieldRectF = RectF(0f, 0f, 0f, 0f)
 
-    private val bitmapCell = BitmapFactory.decodeResource(resources, R.drawable.cell)
-    private val bitmapMole = BitmapFactory.decodeResource(resources, R.drawable.mole)
-
     private val imagePaint = Paint()
+
+//    private val bitmapCell = BitmapFactory.decodeResource(resources, R.drawable.cell_resized)
+//    private val bitmapMole = BitmapFactory.decodeResource(resources, R.drawable.mole_resized)
+
+    private var bitmapCell: Bitmap = Bitmap.createScaledBitmap(
+        BitmapFactory.decodeResource(resources, R.drawable.cell),
+        DESIRED_CELL_SIZE.toPx().toInt(),
+        ((DESIRED_CELL_SIZE / 0.88f).toPx()).toInt(),
+        true
+    )
+
+    private val bitmapMole = Bitmap.createScaledBitmap(
+        BitmapFactory.decodeResource(resources, R.drawable.mole),
+        DESIRED_CELL_SIZE.toPx().toInt(),
+        ((DESIRED_CELL_SIZE / 0.88f).toPx()).toInt(),
+        true
+    )
+
     private var defPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
         it.color = resources.getColor(R.color.teal_700)
         it.style = Paint.Style.STROKE
@@ -55,6 +66,7 @@ class GameFieldView @JvmOverloads constructor(
                 arrayOf(false, true, false),
             )
         }
+        Log.d(TAG, "png size pixels: ${bitmapCell.height}; dp: ${bitmapCell.height.toFloat().toDp()} ")
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -108,7 +120,6 @@ class GameFieldView @JvmOverloads constructor(
 
         Log.d(TAG, "onDraw: top = ${fieldRectF.top}, left = ${fieldRectF.left}, bottom = ${fieldRectF.right}, bottom = ${fieldRectF.bottom}")
         drawCells(canvas)
-        canvas.drawRect(fieldRectF, defPaint)
     }
 
     private fun drawCells(canvas: Canvas){
@@ -161,7 +172,7 @@ class GameFieldView @JvmOverloads constructor(
 
 
     companion object {
-        const val DESIRED_CELL_SIZE = 100f //dp
+        const val DESIRED_CELL_SIZE = 115f //dp
         const val MARGIN_BETWEEN_CELLS_ = 25f //dp
     }
 
