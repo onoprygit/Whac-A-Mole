@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/gameMenuFragment">
+    app:startDestination="@id/startScreenFragment">
     <fragment
-        android:id="@+id/gameMenuFragment"
+        android:id="@+id/startScreenFragment"
         android:name="com.onopry.whac_a_mole.view.screens.StartScreenFragment"
         android:label="fragment_game_menu"
         tools:layout="@layout/fragment_start_screen" >
         <action
-            android:id="@+id/action_gameMenuFragment_to_gameFragment2"
-            app:destination="@id/gameFragment2" />
+            android:id="@+id/action_startScreenFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
     </fragment>
     <fragment
-        android:id="@+id/gameFragment2"
+        android:id="@+id/gameFragment"
         android:name="com.onopry.whac_a_mole.view.screens.GameFragment"
         android:label="fragment_game"
         tools:layout="@layout/fragment_game" >
         <action
-            android:id="@+id/action_gameFragment2_to_resultFragment"
+            android:id="@+id/action_gameFragment_to_resultFragment"
             app:destination="@id/resultFragment"/>
     </fragment>
     <fragment
@@ -28,11 +28,11 @@
         android:label="fragment_result"
         tools:layout="@layout/fragment_result" >
         <action
-            android:id="@+id/action_resultFragment_to_gameFragment2"
-            app:destination="@id/gameFragment2" />
+            android:id="@+id/action_resultFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
         <action
-            android:id="@+id/action_resultFragment_to_gameMenuFragment"
-            app:destination="@id/gameMenuFragment" />
+            android:id="@+id/action_resultFragment_to_startScreenFragment"
+            app:destination="@id/startScreenFragment" />
         <argument
             android:name="userScore"
             app:argType="integer"

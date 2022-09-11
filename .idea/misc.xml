@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android_Studio_Projects/Whac-A-Mole/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Android_Studio_Projects/Whac-A-Mole/app/src/main/res/layout/fragment_game.xml" value="0.11911231884057971" />
         <entry key="..\:/Android_Studio_Projects/Whac-A-Mole/app/src/main/res/layout/fragment_result.xml" value="0.18802083333333333" />
         <entry key="..\:/Android_Studio_Projects/Whac-A-Mole/app/src/main/res/layout/fragment_start_screen.xml" value="0.18802083333333333" />
