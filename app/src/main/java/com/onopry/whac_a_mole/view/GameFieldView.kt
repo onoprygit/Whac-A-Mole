@@ -1,157 +1,169 @@
 package com.onopry.whac_a_mole.view
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
+import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
+import com.onopry.whac_a_mole.COLUMNS
 import com.onopry.whac_a_mole.R
+import com.onopry.whac_a_mole.ROWS
+import kotlin.math.floor
 
-/**
- * TODO: document your custom view class.
- */
-class GameFieldView : View {
+private const val TAG = "GameFieldView_TAG"
 
-    private var _exampleString: String? = null // TODO: use a default from R.string...
-    private var _exampleColor: Int = Color.RED // TODO: use a default from R.color...
-    private var _exampleDimension: Float = 0f // TODO: use a default from R.dimen...
+typealias OnCellActionListener = (row: Int, column: Int) -> Unit
 
-    private lateinit var textPaint: TextPaint
-    private var textWidth: Float = 0f
-    private var textHeight: Float = 0f
+class GameFieldView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr) {
 
-    /**
-     * The text to draw
-     */
-    var exampleString: String?
-        get() = _exampleString
+    var gameField: Array<Array<Boolean>>? = null
         set(value) {
-            _exampleString = value
-            invalidateTextPaintAndMeasurements()
+            field = value
+            invalidate()
         }
 
-    /**
-     * The font color
-     */
-    var exampleColor: Int
-        get() = _exampleColor
-        set(value) {
-            _exampleColor = value
-            invalidateTextPaintAndMeasurements()
-        }
+    var actionListener: OnCellActionListener? = null
 
-    /**
-     * In the example view, this dimension is the font size.
-     */
-    var exampleDimension: Float
-        get() = _exampleDimension
-        set(value) {
-            _exampleDimension = value
-            invalidateTextPaintAndMeasurements()
-        }
+    private var cellSize = 0f
+    private var cellPadding = 0f
 
-    /**
-     * In the example view, this drawable is drawn above the text.
-     */
-    var exampleDrawable: Drawable? = null
+    private val fieldRectF = RectF(0f, 0f, 0f, 0f)
 
-    constructor(context: Context) : super(context) {
-        init(null, 0)
+    private val bitmapCell = BitmapFactory.decodeResource(resources, R.drawable.cell)
+    private val bitmapMole = BitmapFactory.decodeResource(resources, R.drawable.mole)
+
+    private val imagePaint = Paint()
+    private var defPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
+        it.color = resources.getColor(R.color.teal_700)
+        it.style = Paint.Style.STROKE
+        it.strokeWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3f, resources.displayMetrics)
     }
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
-        init(attrs, defStyle)
-    }
-
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
-        // Load attributes
-        val a = context.obtainStyledAttributes(
-            attrs, R.styleable.GameFieldView, defStyle, 0
-        )
-
-        _exampleString = a.getString(
-            R.styleable.GameFieldView_exampleString
-        )
-        _exampleColor = a.getColor(
-            R.styleable.GameFieldView_exampleColor,
-            exampleColor
-        )
-        // Use getDimensionPixelSize or getDimensionPixelOffset when dealing with
-        // values that should fall on pixel boundaries.
-        _exampleDimension = a.getDimension(
-            R.styleable.GameFieldView_exampleDimension,
-            exampleDimension
-        )
-
-        if (a.hasValue(R.styleable.GameFieldView_exampleDrawable)) {
-            exampleDrawable = a.getDrawable(
-                R.styleable.GameFieldView_exampleDrawable
+    init {
+        if (isInEditMode) {
+            gameField = arrayOf(
+                arrayOf(false, true, false),
+                arrayOf(true, false, false),
+                arrayOf(false, true, false),
             )
-            exampleDrawable?.callback = this
         }
-
-        a.recycle()
-
-        // Set up a default TextPaint object
-        textPaint = TextPaint().apply {
-            flags = Paint.ANTI_ALIAS_FLAG
-            textAlign = Paint.Align.LEFT
-        }
-
-        // Update TextPaint and text measurements from attributes
-        invalidateTextPaintAndMeasurements()
     }
 
-    private fun invalidateTextPaintAndMeasurements() {
-        textPaint.let {
-            it.textSize = exampleDimension
-            it.color = exampleColor
-            textWidth = it.measureText(exampleString)
-            textHeight = it.fontMetrics.bottom
-        }
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+
+        val safeWidth = w - paddingLeft - paddingRight
+        val safeHeight = h - paddingTop - paddingBottom
+
+        val cellWidth = bitmapCell.width.toFloat()  //(safeWidth / COLUMNS).toFloat()
+        val cellHeight = bitmapCell.height.toFloat() //(safeHeight / ROWS).toFloat()
+
+        cellSize = cellWidth.coerceAtMost(cellHeight)
+//        cellPadding = cellSize * 0.2f
+
+        val fieldWidth = cellSize * COLUMNS - 1
+        val fieldHeight = cellSize * ROWS - 1
+
+        fieldRectF.left = paddingLeft + (safeWidth - fieldWidth) / 2
+        fieldRectF.top = paddingTop + (safeHeight - fieldHeight) / 2
+        fieldRectF.right = fieldRectF.left + fieldWidth
+        fieldRectF.bottom = fieldRectF.top + fieldHeight
+
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val minWidth = suggestedMinimumWidth + paddingStart + paddingEnd
+        val minHeight = suggestedMinimumHeight + paddingTop + paddingBottom
+
+        val desiredCellSizePixels = bitmapCell.width
+
+        val desiredWidth = Integer.max(
+            minWidth,
+            COLUMNS * desiredCellSizePixels + paddingEnd + paddingStart/* + (desiredMarginsBetweenCEllsPixels * (COLUMNS + 1))*/
+        )
+        val desiredHeight = Integer.max(
+            minHeight,
+            ROWS * desiredCellSizePixels + paddingTop + paddingBottom /*+ (desiredMarginsBetweenCEllsPixels * (ROWS + 1))*/
+        )
+
+        setMeasuredDimension(
+            resolveSize(widthMeasureSpec, desiredWidth),
+            resolveSize(heightMeasureSpec, desiredHeight)
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+//        if (gameField != null) return
+//        if (fieldRectF.width() <= 0) return
+//        if (fieldRectF.height() <= 0) return
 
-        // TODO: consider storing these as member variables to reduce
-        // allocations per draw cycle.
-        val paddingLeft = paddingLeft
-        val paddingTop = paddingTop
-        val paddingRight = paddingRight
-        val paddingBottom = paddingBottom
-
-        val contentWidth = width - paddingLeft - paddingRight
-        val contentHeight = height - paddingTop - paddingBottom
-
-        exampleString?.let {
-            // Draw the text.
-            canvas.drawText(
-                it,
-                paddingLeft + (contentWidth - textWidth) / 2,
-                paddingTop + (contentHeight + textHeight) / 2,
-                textPaint
-            )
-        }
-
-        // Draw the example drawable on top of the text.
-        exampleDrawable?.let {
-            it.setBounds(
-                paddingLeft, paddingTop,
-                paddingLeft + contentWidth, paddingTop + contentHeight
-            )
-            it.draw(canvas)
-        }
+        Log.d(TAG, "onDraw: top = ${fieldRectF.top}, left = ${fieldRectF.left}, bottom = ${fieldRectF.right}, bottom = ${fieldRectF.bottom}")
+        drawCells(canvas)
+        canvas.drawRect(fieldRectF, defPaint)
     }
+
+    private fun drawCells(canvas: Canvas){
+        gameField?.let { field ->
+            for (cols in field.indices) {
+                for (rows in field[cols].indices) {
+                    canvas.drawBitmap(
+                        bitmapCell,
+                        fieldRectF.left + cols * bitmapCell.width,
+//                        (fieldRectF.left + (cellPadding * cols)) + cols * bitmapCell.width,
+                        fieldRectF.top + rows * bitmapCell.height,
+                        imagePaint
+                    )
+                    if (field[cols][rows]) {
+                        canvas.drawBitmap(
+                            bitmapMole,
+//                            (fieldRectF.left + (cellPadding * cols)) + cols * bitmapCell.width,
+                            fieldRectF.left + cols * bitmapCell.width,
+                            fieldRectF.top + rows * bitmapCell.height,
+                            imagePaint
+                        )
+                    }
+                }
+            }
+        }
+
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> return true
+            MotionEvent.ACTION_UP -> {
+                val row = getRow(event)
+                val column = getColumn(event)
+                if ((row in 0 until ROWS) && (column in 0 until COLUMNS)) {
+                    Log.d(TAG, "onTouchEvent: {${event.x}; ${event.y}} {$column; $row}")
+                    actionListener?.invoke(row, column)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    private fun getRow(event: MotionEvent) =
+        floor(((event.y - fieldRectF.top) / bitmapCell.height)).toInt()
+
+    private fun getColumn(event: MotionEvent) =
+        floor(((event.x - fieldRectF.left)/ bitmapCell.width)).toInt()
+
+
+    companion object {
+        const val DESIRED_CELL_SIZE = 100f //dp
+        const val MARGIN_BETWEEN_CELLS_ = 25f //dp
+    }
+
+
 }
