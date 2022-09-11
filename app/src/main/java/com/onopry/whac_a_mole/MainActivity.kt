@@ -11,6 +11,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
+        // need for no reactivate status bar after load app from task manager
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
         supportActionBar?.hide()
         super.onResume()

@@ -47,6 +47,7 @@
         android:text="120"
         android:textSize="32sp"
         android:textStyle="bold"
+        android:fontFamily="casual"
         />
 
     <TextView
@@ -61,6 +62,7 @@
         android:textSize="32sp"
         android:textStyle="bold"
         tools:text="20"
+        android:fontFamily="casual"
         />
 
     <androidx.constraintlayout.widget.Guideline
