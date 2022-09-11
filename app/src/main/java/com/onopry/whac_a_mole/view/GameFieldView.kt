@@ -12,6 +12,7 @@ import android.view.View
 import com.onopry.whac_a_mole.COLUMNS
 import com.onopry.whac_a_mole.R
 import com.onopry.whac_a_mole.ROWS
+import kotlin.math.floor
 
 private const val TAG = "GameFieldView_TAG"
 
@@ -82,12 +83,7 @@ class GameFieldView @JvmOverloads constructor(
         val minWidth = suggestedMinimumWidth + paddingStart + paddingEnd
         val minHeight = suggestedMinimumHeight + paddingTop + paddingBottom
 
-//        val desiredCellSizePixels = TypedValue.applyDimension(
-//            TypedValue.COMPLEX_UNIT_DIP, DESIRED_CELL_SIZE, resources.displayMetrics).toInt()
         val desiredCellSizePixels = bitmapCell.width
-
-//        val desiredMarginsBetweenCEllsPixels = TypedValue.applyDimension(
-//            TypedValue.COMPLEX_UNIT_DIP, MARGIN_BETWEEN_CELLS_, resources.displayMetrics).toInt()
 
         val desiredWidth = Integer.max(
             minWidth,
@@ -110,6 +106,7 @@ class GameFieldView @JvmOverloads constructor(
 //        if (fieldRectF.width() <= 0) return
 //        if (fieldRectF.height() <= 0) return
 
+        Log.d(TAG, "onDraw: top = ${fieldRectF.top}, left = ${fieldRectF.left}, bottom = ${fieldRectF.right}, bottom = ${fieldRectF.bottom}")
         drawCells(canvas)
         canvas.drawRect(fieldRectF, defPaint)
     }
@@ -146,9 +143,8 @@ class GameFieldView @JvmOverloads constructor(
             MotionEvent.ACTION_UP -> {
                 val row = getRow(event)
                 val column = getColumn(event)
-                Log.d(TAG, "onTouchEvent: {${event.x}; ${event.y}} {$column; $row}")
-                if (row >= 0 && row < ROWS && column >= 0 && column < COLUMNS) {
-//                    Log.d(TAG, "onTouchEvent: row=$row : column=$column")
+                if ((row in 0 until ROWS) && (column in 0 until COLUMNS)) {
+                    Log.d(TAG, "onTouchEvent: {${event.x}; ${event.y}} {$column; $row}")
                     actionListener?.invoke(row, column)
                     return true
                 }
@@ -158,10 +154,10 @@ class GameFieldView @JvmOverloads constructor(
     }
 
     private fun getRow(event: MotionEvent) =
-        ((event.y - fieldRectF.top) / bitmapCell.height).toInt()
+        floor(((event.y - fieldRectF.top) / bitmapCell.height)).toInt()
 
     private fun getColumn(event: MotionEvent) =
-        ((event.x - fieldRectF.left)/ bitmapCell.width).toInt()
+        floor(((event.x - fieldRectF.left)/ bitmapCell.width)).toInt()
 
 
     companion object {
