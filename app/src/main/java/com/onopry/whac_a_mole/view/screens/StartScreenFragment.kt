@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.onopry.whac_a_mole.R
 import com.onopry.whac_a_mole.databinding.FragmentStartScreenBinding
 
 class StartScreenFragment : Fragment() {
@@ -17,7 +19,13 @@ class StartScreenFragment : Fragment() {
     ): View {
         binding = FragmentStartScreenBinding.inflate(inflater, container, false)
 
+        binding.startGameBtn.setOnClickListener { startGame() }
+
         return binding.root
+    }
+
+    private fun startGame() {
+        findNavController().navigate(R.id.action_startScreenFragment_to_gameFragment)
     }
 
 }
