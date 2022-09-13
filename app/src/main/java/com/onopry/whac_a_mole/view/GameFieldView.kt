@@ -38,17 +38,24 @@ class GameFieldView @JvmOverloads constructor(
 //    private val bitmapCell = BitmapFactory.decodeResource(resources, R.drawable.cell_resized)
 //    private val bitmapMole = BitmapFactory.decodeResource(resources, R.drawable.mole_resized)
 
-    private var bitmapCell: Bitmap = Bitmap.createScaledBitmap(
-        BitmapFactory.decodeResource(resources, R.drawable.cell),
+    private var cellBitmap: Bitmap = Bitmap.createScaledBitmap(
+        BitmapFactory.decodeResource(resources, R.drawable.ic_cell),
         DESIRED_CELL_SIZE.toPx().toInt(),
         ((DESIRED_CELL_SIZE / 0.88f).toPx()).toInt(),
         true
     )
 
-    private val bitmapMole = Bitmap.createScaledBitmap(
-        BitmapFactory.decodeResource(resources, R.drawable.mole),
+    private val moleBitmap = Bitmap.createScaledBitmap(
+        BitmapFactory.decodeResource(resources, R.drawable.ic_mole),
         DESIRED_CELL_SIZE.toPx().toInt(),
         ((DESIRED_CELL_SIZE / 0.88f).toPx()).toInt(),
+        true
+    )
+
+    private val fistBitmap = Bitmap.createScaledBitmap(
+        BitmapFactory.decodeResource(resources, R.drawable.ic_hammer),
+        DESIRED_FIST_SIZE.toPx().toInt(),
+        DESIRED_FIST_SIZE.toPx().toInt(),
         true
     )
 
@@ -66,7 +73,7 @@ class GameFieldView @JvmOverloads constructor(
                 arrayOf(false, true, false),
             )
         }
-        Log.d(TAG, "png size pixels: ${bitmapCell.height}; dp: ${bitmapCell.height.toFloat().toDp()} ")
+        Log.d(TAG, "png size pixels: ${cellBitmap.height}; dp: ${cellBitmap.height.toFloat().toDp()} ")
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -75,8 +82,8 @@ class GameFieldView @JvmOverloads constructor(
         val safeWidth = w - paddingLeft - paddingRight
         val safeHeight = h - paddingTop - paddingBottom
 
-        val cellWidth = bitmapCell.width.toFloat()  //(safeWidth / COLUMNS).toFloat()
-        val cellHeight = bitmapCell.height.toFloat() //(safeHeight / ROWS).toFloat()
+        val cellWidth = cellBitmap.width.toFloat()  //(safeWidth / COLUMNS).toFloat()
+        val cellHeight = cellBitmap.height.toFloat() //(safeHeight / ROWS).toFloat()
 
         cellSize = cellWidth.coerceAtMost(cellHeight)
 //        cellPadding = cellSize * 0.2f
@@ -95,7 +102,7 @@ class GameFieldView @JvmOverloads constructor(
         val minWidth = suggestedMinimumWidth + paddingStart + paddingEnd
         val minHeight = suggestedMinimumHeight + paddingTop + paddingBottom
 
-        val desiredCellSizePixels = bitmapCell.width
+        val desiredCellSizePixels = cellBitmap.width
 
         val desiredWidth = Integer.max(
             minWidth,
@@ -127,18 +134,18 @@ class GameFieldView @JvmOverloads constructor(
             for (cols in field.indices) {
                 for (rows in field[cols].indices) {
                     canvas.drawBitmap(
-                        bitmapCell,
-                        fieldRectF.left + cols * bitmapCell.width,
+                        cellBitmap,
+                        fieldRectF.left + cols * cellBitmap.width,
 //                        (fieldRectF.left + (cellPadding * cols)) + cols * bitmapCell.width,
-                        fieldRectF.top + rows * bitmapCell.height,
+                        fieldRectF.top + rows * cellBitmap.height,
                         imagePaint
                     )
                     if (field[cols][rows]) {
                         canvas.drawBitmap(
-                            bitmapMole,
+                            moleBitmap,
 //                            (fieldRectF.left + (cellPadding * cols)) + cols * bitmapCell.width,
-                            fieldRectF.left + cols * bitmapCell.width,
-                            fieldRectF.top + rows * bitmapCell.height,
+                            fieldRectF.left + cols * cellBitmap.width,
+                            fieldRectF.top + rows * cellBitmap.height,
                             imagePaint
                         )
                     }
@@ -165,14 +172,15 @@ class GameFieldView @JvmOverloads constructor(
     }
 
     private fun getRow(event: MotionEvent) =
-        floor(((event.y - fieldRectF.top) / bitmapCell.height)).toInt()
+        floor(((event.y - fieldRectF.top) / cellBitmap.height)).toInt()
 
     private fun getColumn(event: MotionEvent) =
-        floor(((event.x - fieldRectF.left)/ bitmapCell.width)).toInt()
+        floor(((event.x - fieldRectF.left)/ cellBitmap.width)).toInt()
 
 
     companion object {
         const val DESIRED_CELL_SIZE = 115f //dp
+        const val DESIRED_FIST_SIZE = 50f
         const val MARGIN_BETWEEN_CELLS_ = 25f //dp
     }
 
