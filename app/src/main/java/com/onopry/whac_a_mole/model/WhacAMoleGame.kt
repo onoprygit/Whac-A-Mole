@@ -38,7 +38,6 @@ class WhacAMoleGame (
     private val gameTimer = initGameTimer()
 
     fun getCell(row: Int, column: Int): Cell {
-//        if (row < 0 || column < 0 || row >= rows || column >= columns) return Cell.EMPTY
         return _gameField.value?.get(column)?.get(row) ?: Cell.EMPTY
     }
 

@@ -30,14 +30,9 @@ class GameFieldView @JvmOverloads constructor(
     var actionListener: OnCellActionListener? = null
 
     private var cellSize = 0f
-    private var cellPadding = 0f
-
     private val fieldRectF = RectF(0f, 0f, 0f, 0f)
 
     private val imagePaint = Paint()
-
-//    private val bitmapCell = BitmapFactory.decodeResource(resources, R.drawable.cell_resized)
-//    private val bitmapMole = BitmapFactory.decodeResource(resources, R.drawable.mole_resized)
 
     private var cellBitmap: Bitmap = Bitmap.createScaledBitmap(
         BitmapFactory.decodeResource(resources, R.drawable.ic_cell),
@@ -60,12 +55,6 @@ class GameFieldView @JvmOverloads constructor(
         true
     )
 
-    private var defPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
-        it.color = resources.getColor(R.color.teal_700)
-        it.style = Paint.Style.STROKE
-        it.strokeWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3f, resources.displayMetrics)
-    }
-
     init {
         if (isInEditMode) {
             gameField = arrayOf(
@@ -83,11 +72,10 @@ class GameFieldView @JvmOverloads constructor(
         val safeWidth = w - paddingLeft - paddingRight
         val safeHeight = h - paddingTop - paddingBottom
 
-        val cellWidth = cellBitmap.width.toFloat()  //(safeWidth / COLUMNS).toFloat()
-        val cellHeight = cellBitmap.height.toFloat() //(safeHeight / ROWS).toFloat()
+        val cellWidth = cellBitmap.width.toFloat()
+        val cellHeight = cellBitmap.height.toFloat()
 
         cellSize = cellWidth.coerceAtMost(cellHeight)
-//        cellPadding = cellSize * 0.2f
 
         val fieldWidth = cellSize * COLUMNS - 1
         val fieldHeight = cellSize * ROWS - 1
@@ -107,11 +95,11 @@ class GameFieldView @JvmOverloads constructor(
 
         val desiredWidth = Integer.max(
             minWidth,
-            COLUMNS * desiredCellSizePixels + paddingEnd + paddingStart/* + (desiredMarginsBetweenCEllsPixels * (COLUMNS + 1))*/
+            COLUMNS * desiredCellSizePixels + paddingEnd + paddingStart
         )
         val desiredHeight = Integer.max(
             minHeight,
-            ROWS * desiredCellSizePixels + paddingTop + paddingBottom /*+ (desiredMarginsBetweenCEllsPixels * (ROWS + 1))*/
+            ROWS * desiredCellSizePixels + paddingTop + paddingBottom
         )
 
         setMeasuredDimension(
@@ -125,8 +113,6 @@ class GameFieldView @JvmOverloads constructor(
 //        if (gameField != null) return
 //        if (fieldRectF.width() <= 0) return
 //        if (fieldRectF.height() <= 0) return
-
-        Log.d(TAG, "onDraw: top = ${fieldRectF.top}, left = ${fieldRectF.left}, bottom = ${fieldRectF.right}, bottom = ${fieldRectF.bottom}")
         drawCells(canvas)
     }
 
@@ -137,7 +123,6 @@ class GameFieldView @JvmOverloads constructor(
                     canvas.drawBitmap(
                         cellBitmap,
                         fieldRectF.left + cols * cellBitmap.width,
-//                        (fieldRectF.left + (cellPadding * cols)) + cols * bitmapCell.width,
                         fieldRectF.top + rows * cellBitmap.height,
                         imagePaint
                     )
@@ -145,7 +130,6 @@ class GameFieldView @JvmOverloads constructor(
                     if (field[cols][rows] == Cell.HAS_MOLE) {
                         canvas.drawBitmap(
                             moleBitmap,
-//                            (fieldRectF.left + (cellPadding * cols)) + cols * bitmapCell.width,
                             fieldRectF.left + cols * cellBitmap.width,
                             fieldRectF.top + rows * cellBitmap.height,
                             imagePaint
