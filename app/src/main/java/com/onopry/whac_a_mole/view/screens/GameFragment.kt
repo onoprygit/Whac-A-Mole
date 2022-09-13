@@ -25,7 +25,7 @@ class GameFragment : Fragment() {
         binding = FragmentGameBinding.inflate(inflater, container, false)
 
         // Starting game
-        viewModel.initGame()
+        viewModel.startGame()
 
         // Observing state of game field
         viewModel.gameField.observe(viewLifecycleOwner) { field ->
@@ -33,17 +33,17 @@ class GameFragment : Fragment() {
             Log.d(TAG, "onCreateView: ${field.toString()}")
         }
         // Updating timer for user
-        viewModel.timer.observe(viewLifecycleOwner) { time ->
+        viewModel.time.observe(viewLifecycleOwner) { time ->
             binding.gameTimerValueTv.text = "${time/1000}"
         }
         // Checking is game finished
         viewModel.isGameFinished.observe(viewLifecycleOwner) { isGameFinished ->
             if (isGameFinished)
-                viewModel.gameScore.value?.let { openResults(it) }
+                viewModel.score.value?.let { openResults(it) }
             Log.d(TAG, "isGameFinished: $isGameFinished")
         }
         // Updating score
-        viewModel.gameScore.observe(viewLifecycleOwner) { score ->
+        viewModel.score.observe(viewLifecycleOwner) { score ->
 //            this.score = score
             binding.scoreValueTv.text = "$score"
         }
