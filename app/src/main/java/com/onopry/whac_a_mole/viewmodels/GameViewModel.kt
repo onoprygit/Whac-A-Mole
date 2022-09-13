@@ -17,9 +17,6 @@ class GameViewModel: ViewModel() {
     val time = whacAMoleGame.time
     val isGameFinished = whacAMoleGame.isGameFinished
 
-    // Fake queue for current mole's on the field
-    private val moleQueue = LinkedList<Mole>()
-
     fun startGame() { whacAMoleGame.initGame() }
 
     // todo: rename to correct signature
