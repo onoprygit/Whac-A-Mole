@@ -126,7 +126,6 @@ class GameFieldView @JvmOverloads constructor(
                         fieldRectF.top + rows * cellBitmap.height,
                         imagePaint
                     )
-//                  todo model in view!!!
                     if (field[cols][rows] == Cell.HAS_MOLE) {
                         canvas.drawBitmap(
                             moleBitmap,
