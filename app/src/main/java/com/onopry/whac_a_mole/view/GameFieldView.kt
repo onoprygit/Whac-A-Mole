@@ -8,6 +8,7 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import com.onopry.whac_a_mole.*
+import com.onopry.whac_a_mole.model.Cell
 import kotlin.math.floor
 
 private const val TAG = "GameFieldView_TAG"
@@ -20,7 +21,7 @@ class GameFieldView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    var gameField: Array<Array<Boolean>>? = null
+    var gameField: Array<Array<Cell>>? = null
         set(value) {
             field = value
             invalidate()
@@ -40,22 +41,22 @@ class GameFieldView @JvmOverloads constructor(
 
     private var cellBitmap: Bitmap = Bitmap.createScaledBitmap(
         BitmapFactory.decodeResource(resources, R.drawable.ic_cell),
-        DESIRED_CELL_SIZE.toPx().toInt(),
-        ((DESIRED_CELL_SIZE / 0.88f).toPx()).toInt(),
+        DESIRED_CELL_SIZE_DP.toPx().toInt(),
+        ((DESIRED_CELL_SIZE_DP / 0.88f).toPx()).toInt(),
         true
     )
 
     private val moleBitmap = Bitmap.createScaledBitmap(
         BitmapFactory.decodeResource(resources, R.drawable.ic_mole),
-        DESIRED_CELL_SIZE.toPx().toInt(),
-        ((DESIRED_CELL_SIZE / 0.88f).toPx()).toInt(),
+        DESIRED_CELL_SIZE_DP.toPx().toInt(),
+        ((DESIRED_CELL_SIZE_DP / 0.88f).toPx()).toInt(),
         true
     )
 
     private val fistBitmap = Bitmap.createScaledBitmap(
         BitmapFactory.decodeResource(resources, R.drawable.ic_hammer),
-        DESIRED_FIST_SIZE.toPx().toInt(),
-        DESIRED_FIST_SIZE.toPx().toInt(),
+        DESIRED_FIST_SIZE_DP.toPx().toInt(),
+        DESIRED_FIST_SIZE_DP.toPx().toInt(),
         true
     )
 
@@ -68,9 +69,9 @@ class GameFieldView @JvmOverloads constructor(
     init {
         if (isInEditMode) {
             gameField = arrayOf(
-                arrayOf(false, true, false),
-                arrayOf(true, false, false),
-                arrayOf(false, true, false),
+                arrayOf(Cell.EMPTY, Cell.HAS_MOLE, Cell.EMPTY),
+                arrayOf(Cell.HAS_MOLE, Cell.EMPTY, Cell.EMPTY),
+                arrayOf(Cell.EMPTY, Cell.HAS_MOLE, Cell.EMPTY),
             )
         }
         Log.d(TAG, "png size pixels: ${cellBitmap.height}; dp: ${cellBitmap.height.toFloat().toDp()} ")
@@ -140,7 +141,8 @@ class GameFieldView @JvmOverloads constructor(
                         fieldRectF.top + rows * cellBitmap.height,
                         imagePaint
                     )
-                    if (field[cols][rows]) {
+//                  todo model in view!!!
+                    if (field[cols][rows] == Cell.HAS_MOLE) {
                         canvas.drawBitmap(
                             moleBitmap,
 //                            (fieldRectF.left + (cellPadding * cols)) + cols * bitmapCell.width,
@@ -161,11 +163,8 @@ class GameFieldView @JvmOverloads constructor(
             MotionEvent.ACTION_UP -> {
                 val row = getRow(event)
                 val column = getColumn(event)
-                if ((row in 0 until ROWS) && (column in 0 until COLUMNS)) {
-                    Log.d(TAG, "onTouchEvent: {${event.x}; ${event.y}} {$column; $row}")
-                    actionListener?.invoke(row, column)
-                    return true
-                }
+                actionListener?.invoke(row, column)
+                return true
             }
         }
         return false
@@ -179,9 +178,8 @@ class GameFieldView @JvmOverloads constructor(
 
 
     companion object {
-        const val DESIRED_CELL_SIZE = 115f //dp
-        const val DESIRED_FIST_SIZE = 50f
-        const val MARGIN_BETWEEN_CELLS_ = 25f //dp
+        const val DESIRED_CELL_SIZE_DP = 115f
+        const val DESIRED_FIST_SIZE_DP = 50f
     }
 
 
