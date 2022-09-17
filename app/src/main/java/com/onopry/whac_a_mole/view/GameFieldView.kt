@@ -63,7 +63,10 @@ class GameFieldView @JvmOverloads constructor(
                 arrayOf(Cell.EMPTY, Cell.HAS_MOLE, Cell.EMPTY),
             )
         }
-        Log.d(TAG, "png size pixels: ${cellBitmap.height}; dp: ${cellBitmap.height.toFloat().toDp()} ")
+        Log.d(
+            TAG,
+            "png size pixels: ${cellBitmap.height}; dp: ${cellBitmap.height.toFloat().toDp()} "
+        )
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -116,7 +119,7 @@ class GameFieldView @JvmOverloads constructor(
         drawCells(canvas)
     }
 
-    private fun drawCells(canvas: Canvas){
+    private fun drawCells(canvas: Canvas) {
         gameField?.let { field ->
             for (cols in field.indices) {
                 for (rows in field[cols].indices) {
@@ -157,7 +160,7 @@ class GameFieldView @JvmOverloads constructor(
         floor(((event.y - fieldRectF.top) / cellBitmap.height)).toInt()
 
     private fun getColumn(event: MotionEvent) =
-        floor(((event.x - fieldRectF.left)/ cellBitmap.width)).toInt()
+        floor(((event.x - fieldRectF.left) / cellBitmap.width)).toInt()
 
 
     companion object {
