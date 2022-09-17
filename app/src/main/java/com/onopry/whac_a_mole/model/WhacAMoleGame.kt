@@ -15,10 +15,24 @@ enum class Cell {
     HAS_MOLE
 }
 
-class WhacAMoleGame (
+class GameField(val rows: Int, val columns: Int){
+    val cells = MutableLiveData<Array<Array<Cell>>>()
+
+    fun getCell(row: Int, column: Int): Cell {
+        return cells.value?.get(column)?.get(row) ?: Cell.EMPTY
+    }
+
+    fun setCell(row: Int, column: Int, cell: Cell) {
+        if (row < 0 || column < 0 || row >= rows || column >= columns) return
+        cells.value?.get(row)?.set(column, cell)
+    }
+
+}
+
+class WhacAMoleGame(
     private val rows: Int,
     private val columns: Int
-    ) {
+) {
 
     private val _gameField = MutableLiveData<Array<Array<Cell>>>()
     val gameField: LiveData<Array<Array<Cell>>> = _gameField
@@ -35,7 +49,8 @@ class WhacAMoleGame (
     // Fake queue for current mole's on the field
     private val moleQueue = LinkedList<Mole>()
 
-    private val gameTimer = initGameTimer()
+//    private val gameTimer = initGameTimer()
+
 
     fun getCell(row: Int, column: Int): Cell {
         return _gameField.value?.get(column)?.get(row) ?: Cell.EMPTY
@@ -49,24 +64,23 @@ class WhacAMoleGame (
     fun initGame() {
         clearGameField()
         _gameScore.value = 0
-        gameTimer.start()
+//        gameTimer.start()
     }
 
     private fun clearGameField() {
-        _gameField.value = Array(rows) { Array(columns) {Cell.EMPTY} }
+        _gameField.value = Array(rows) { Array(columns) { Cell.EMPTY } }
     }
 
-    fun finishGame(){
+    fun finishGame() {
         _isGameFinished.postValue(true)
         _time.value = 0
         clearGameField()
-        stopTimer()
+//        stopTimer()
     }
 
     // todo: create class properties timer
-    private fun initGameTimer(): CountDownTimer {
-        _time.value = 0
-        return object : CountDownTimer(GAME_TIME, GAME_TICK){
+    fun initGameTimer(): CountDownTimer {
+        return object : CountDownTimer(GAME_TIME, GAME_TICK) {
             var secs = (GAME_TIME / 1000).toInt()
             override fun onTick(time: Long) {
                 this@WhacAMoleGame._time.value = time
@@ -80,12 +94,22 @@ class WhacAMoleGame (
                         removeMole(moleQueue.first)
                 }
             }
-            override fun onFinish() { finishGame() }
+
+            override fun onFinish() {
+                finishGame()
+            }
+        }
+    }
+
+    fun removeMoleIfLifetimeGone(time: Long){
+        if (moleQueue.isNotEmpty()) {
+            if (time < moleQueue.first().endLifeTime)
+                removeMole(moleQueue.first)
         }
     }
 
     // creating new mole on random cell and refresh game field
-    private fun generateMole(startLifeTimeMole: Long) {
+    fun generateMole(startLifeTimeMole: Long) {
         if (Random.nextFloat() >= MOLE_SPAWN_RATE) {
             val molePosColumn = Random.nextInt(0, columns)
             val molePosRow = Random.nextInt(0, rows)
@@ -101,7 +125,7 @@ class WhacAMoleGame (
     }
 
     // removing mole from game field and mole queue, using for self-destruction
-    private fun removeMole(mole: Mole) {
+    fun removeMole(mole: Mole) {
         if (mole.col > columns || mole.row > rows) throw Exception("Cant kill mole: Invalid indices")
         val newField = _gameField.value?.copyOf() ?: getEmptyField()
         newField[mole.col][mole.row] = Cell.EMPTY
@@ -122,7 +146,7 @@ class WhacAMoleGame (
         return false
     }
 
-    private fun getEmptyField() = Array(ROWS) { Array(COLUMNS) {Cell.EMPTY} }
+    private fun getEmptyField() = Array(ROWS) { Array(COLUMNS) { Cell.EMPTY } }
 
     // when user tapped mole this method delete it's from queue and game field
     private fun killMole(row: Int, column: Int) {
@@ -137,5 +161,7 @@ class WhacAMoleGame (
 
     }
 
-    fun stopTimer() { gameTimer.cancel() }
+//    fun stopTimer() {
+//        gameTimer.cancel()
+//    }
 }
