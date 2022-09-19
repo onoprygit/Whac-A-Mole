@@ -1,5 +1,6 @@
 package com.onopry.whac_a_mole.model
 
+import android.content.res.Resources
 import android.os.CountDownTimer
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -49,9 +50,6 @@ class WhacAMoleGame(
     // Fake queue for current mole's on the field
     private val moleQueue = LinkedList<Mole>()
 
-//    private val gameTimer = initGameTimer()
-
-
     fun getCell(row: Int, column: Int): Cell {
         return _gameField.value?.get(column)?.get(row) ?: Cell.EMPTY
     }
@@ -64,7 +62,6 @@ class WhacAMoleGame(
     fun initGame() {
         clearGameField()
         _gameScore.value = 0
-//        gameTimer.start()
     }
 
     private fun clearGameField() {
@@ -75,10 +72,7 @@ class WhacAMoleGame(
         _isGameFinished.postValue(true)
         _time.value = 0
         clearGameField()
-//        stopTimer()
     }
-
-    // todo: create class properties timer
     fun initGameTimer(): CountDownTimer {
         return object : CountDownTimer(GAME_TIME, GAME_TICK) {
             var secs = (GAME_TIME / 1000).toInt()
@@ -89,10 +83,7 @@ class WhacAMoleGame(
                     secs -= 1
                 }
 
-                if (moleQueue.isNotEmpty()) {
-                    if (time < moleQueue.first().endLifeTime)
-                        removeMole(moleQueue.first)
-                }
+                removeMoleIfLifetimeGone(time)
             }
 
             override fun onFinish() {
@@ -125,7 +116,7 @@ class WhacAMoleGame(
     }
 
     // removing mole from game field and mole queue, using for self-destruction
-    fun removeMole(mole: Mole) {
+    private fun removeMole(mole: Mole) {
         if (mole.col > columns || mole.row > rows) throw Exception("Cant kill mole: Invalid indices")
         val newField = _gameField.value?.copyOf() ?: getEmptyField()
         newField[mole.col][mole.row] = Cell.EMPTY
@@ -160,8 +151,4 @@ class WhacAMoleGame(
         _gameScore.value = _gameScore.value?.plus(1)
 
     }
-
-//    fun stopTimer() {
-//        gameTimer.cancel()
-//    }
 }

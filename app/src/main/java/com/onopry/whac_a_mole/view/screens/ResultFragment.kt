@@ -28,7 +28,6 @@ class ResultFragment : Fragment() {
         binding = FragmentResultBinding.inflate(inflater, container, false)
         userScore = args.userScore
 
-        // todo: change text hardcode to
         binding.resultRecordTitleTv.text = "Best score: ${readScore(args.userScore)}"
         binding.resultScoreTitleTv.text = "Your score: ${args.userScore}"
         binding.restartGameBnt.setOnClickListener { restartGame() }
