@@ -16,20 +16,6 @@ enum class Cell {
     HAS_MOLE
 }
 
-class GameField(val rows: Int, val columns: Int){
-    val cells = MutableLiveData<Array<Array<Cell>>>()
-
-    fun getCell(row: Int, column: Int): Cell {
-        return cells.value?.get(column)?.get(row) ?: Cell.EMPTY
-    }
-
-    fun setCell(row: Int, column: Int, cell: Cell) {
-        if (row < 0 || column < 0 || row >= rows || column >= columns) return
-        cells.value?.get(row)?.set(column, cell)
-    }
-
-}
-
 class WhacAMoleGame(
     private val rows: Int,
     private val columns: Int
