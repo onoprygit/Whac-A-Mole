@@ -1,6 +1,7 @@
 package com.onopry.whac_a_mole.view
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
@@ -162,11 +163,10 @@ class GameFieldView @JvmOverloads constructor(
     private fun getColumn(event: MotionEvent) =
         floor(((event.x - fieldRectF.left) / cellBitmap.width)).toInt()
 
-
+    fun Float.toDp(): Float = (this / Resources.getSystem().displayMetrics.density)
+    fun Float.toPx() = this * Resources.getSystem().displayMetrics.density
     companion object {
         const val DESIRED_CELL_SIZE_DP = 115f
         const val DESIRED_FIST_SIZE_DP = 50f
     }
-
-
 }
