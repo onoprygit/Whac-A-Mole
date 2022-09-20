@@ -5,7 +5,8 @@
  - Kotlin 
  - MVVM
  - Custom view
- - Shared Preferences
+ - Shared Pre0ferences
+ - Live data
 
 ## Скриншоты
 ![Start screen](https://github.com/onoprygit/Whac-A-Mole/blob/repo/screenshots/start_screenshot.jpg?raw=true)
