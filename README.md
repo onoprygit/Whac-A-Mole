@@ -6,7 +6,7 @@
  - MVVM
  - Custom view
  - Shared Pre0ferences
- - Live data
+ - Navigation component
 
 ## Скриншоты
 ![Start screen](https://github.com/onoprygit/Whac-A-Mole/blob/repo/screenshots/start_screenshot.jpg?raw=true)
